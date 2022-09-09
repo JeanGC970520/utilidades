@@ -12,7 +12,10 @@ function get_scripts {
 			#echo ${i:1} ${name#/*}
 		elif [[ ! $i =~ .+\..+ ]]; then #Para extraer lo que haya dentro de los directorios
 			#echo "Dir: ${i:1}"
-    	mkdir ${i:1} # Genera el directorio
+			if [[ ! -e ${i:1} ]] ; then
+				#echo "Generando directorio: ${i:1}"
+    		mkdir ${i:1} # Genera el directorio
+			fi
 			subdir="${i:1}"
 			get_scripts
 		fi
@@ -28,4 +31,5 @@ if [[ $# -gt 0 ]]; then
 	done
 else
   get_scripts  
+	rm ./boot.py
 fi
