@@ -3,7 +3,7 @@
 
 COMAND=$0
 function usage {
-    echo "Usage: $COMAND [OPTION] [SCRIPTS or DIRECTORY]"
+    echo "Usage: put2esp [OPTION] [SCRIPTS or DIRECTORY]"
     echo "Writes N scripts using ampy command to sends its to esp32, options:"
     echo "      -s      Send only the SCRIPTS that are passed as parameters."
     echo "      -d      Send all DIRECTORY that are passed as parameter."
