@@ -8,11 +8,11 @@
 #   hacer mucho más.
 function ProgressBar {
 # Process data
-    _progress=$(( (${1}*100)/${2} ))           # Alternativa a las operaciones de abajo, una simple regla de tres: _progress=(currentState*100)/totalState
+    #_progress=$(( (${1}*100)/${2} ))           # Alternativa a las operaciones de abajo, una simple regla de tres: _progress=(currentState*100)/totalState
     #_progress=$(( (${1}*100/${2}*100)/100 ))
-    #let _progress=(${1}*100/${2}*100)/100      
-    let _done=(${_progress}*80)/100            # Regla de tres, 80# son el 100%, s
-    let _left=80-$_done
+    let _progress=(${1}*100/${2}*100)/100      
+    let _done=(${_progress}*60)/100            # Regla de tres, 80# son el 100%, s
+    let _left=60-$_done
 # Build progressbar string lengths
     _fill=$(printf "%${_done}s")               # Genera el número de espacios vacios para lo que serán:  #
     _empty=$(printf "%${_left}s")              # Genera el número de espacios vacios para lo que serán:  -
@@ -20,7 +20,7 @@ function ProgressBar {
 # 1.2 Build progressbar strings and print the ProgressBar line
 # 1.2.1 Output example:                           
 # 1.2.1.1 Progress : [########################################] 100%
-printf "\rProgress : [${_fill// /\#}${_empty// /-}] ${_progress}%%"   # Sustitucion de espacios en blanco por # y de espacios en blanco por -
+printf "\rProgress : [${_fill// /█}${_empty// /-}] ${_progress}%%"   # Sustitucion de espacios en blanco por # y de espacios en blanco por -
 
 }
 
