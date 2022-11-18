@@ -15,25 +15,27 @@ function exit_abnormal {
 }
 
 function send_scripts {
-    inicio=1
+    #inicio=1
     num_scripts=$#
     echo "Se pasaran $num_scripts programas"
     for j in $*; do
-        echo -ne "Escribiendo $j al esp32"
-        ProgressBar $inicio $num_scripts
-        inicio=$(( $inicio+1 ))
-        sleep 0.2
-        #ampy -p /dev/ttyUSB0 put $j
+        echo "Escribiendo $j al esp32"
+        #ProgressBar $inicio $num_scripts
+        #inicio=$(( $inicio+1 ))
+        #sleep 0.2
+        ampy -p /dev/ttyUSB0 put $j
     done
     echo ""
 }
 
 function send_all_directory {
     echo "Se leera todo el contenido del directorio y se le pasara al esp32"
-    cont=$(ls $1)
+    cont=$(ls -a $1)
     for i in $cont; do
-        echo "Escribiendo $i al esp32"
-        #ampy -p /dev/ttyUSB0 put $i
+        if [[ $i != main.py && $i != "." && $i != ".." ]]; then 
+            echo "Escribiendo $i al esp32"
+            ampy -p /dev/ttyUSB0 put $i
+        fi
     done
 }
 
