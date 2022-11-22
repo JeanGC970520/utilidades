@@ -36,7 +36,7 @@ function convertTompy_script {
             mkdir mpys/
         fi
         mpy-cross $script
-        mv $script mpys/
+        mv ${script/\.py/\.mpy} mpys/
     done
 }
 
