@@ -26,7 +26,7 @@ function get_scripts {
 	for _script in $*; do
 		if [[ $_script =~ .+\..+ ]]; then
 			echo "Get $_script"
-			#ampy -p /dev/ttyUSB0 get $_script $_script
+			ampy -p /dev/ttyUSB0 get $_script $_script
 		else
 			echo "The argument $_script isn't a script."
 			exit_abnormal
