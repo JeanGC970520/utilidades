@@ -90,27 +90,3 @@ do
             ;;
     esac
 done
-
-
-function convert_recursivamente {
-    lectura=$(ls $SUBDIR)
-    for obj in $lectura; do
-        # echo "File: $file"
-        if [[ $obj =~ (.+\.py)$ && $obj != main.py ]]; then
-            echo "El script $obj será convertido a .mpy"
-            #echo ${obj%*\.py}  # pruebas
-            name=${obj%*\.py}
-            #echo ${obj/*\.py/${name}\.mpy}  # pruebas
-            #mpy-cross $obj 
-            #mv ${obj/*\.py/${name}\.mpy} mpys/$SUBDIR
-            echo "Moviendo $name a dir: $SUBDIR" # pruebas
-        elif [[ -d $obj ]]; then #Esta condicion comprueba si hay un . en el nombre, niega esa comparacion por lo que si hay un . sera False, sino True
-            echo "$obj es un DIRECTORIO"
-            SUBDIR=$obj
-            #cd $file
-            convert_recursivamente
-        fi
-    done
-}
-
-#convert_recursivamente
