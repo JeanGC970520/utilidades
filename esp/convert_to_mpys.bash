@@ -1,7 +1,5 @@
 #!/bin/bash
 # Script para convertir todos los .py en .mpy excepto por el main.py
-#echo "Creando directorio mpys."
-#mkdir mpys/
 
 DIR_RAIZ=$PWD
 DIR_ACTUAL=${DIR_RAIZ##*/}  #Elimina la parte mas larga que coincida con el 
@@ -64,29 +62,33 @@ function exit_abnormal {
     exit 1
 }
 
-while getopts ":f:dh" opt;
-do
-    case ${opt} in 
-        f)
-            echo "Convert to mpy one script."
-            shift $(( OPTIND - 2 ))
-            args=$*
-            convertTompy_script $args
-            ;;
-        d)
-            echo "Convert to mpy all directory."
-            convertTompy
-            ;;
-        h)
-            usage
-            ;;
-        :)
-            echo "Error: -${OPTARG} need arguments."
-            exit_abnormal
-            ;;
-        *)
-            echo "Option nor valid."
-            exit_abnormal
-            ;;
-    esac
-done
+function encrypt {
+
+    while getopts ":f:dh" opt;
+    do
+        case ${opt} in 
+            f)
+                echo "Convert to mpy one script."
+                shift $(( OPTIND - 2 ))
+                args=$*
+                convertTompy_script $args
+                ;;
+            d)
+                echo "Convert to mpy all directory."
+                convertTompy
+                ;;
+            h)
+                usage
+                ;;
+            :)
+                echo "Error: -${OPTARG} need arguments."
+                exit_abnormal
+                ;;
+            *)
+                echo "Option nor valid."
+                exit_abnormal
+                ;;
+        esac
+    done
+
+}

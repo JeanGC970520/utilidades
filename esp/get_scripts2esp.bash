@@ -62,20 +62,6 @@ function get_dir_ampy {
 		ampy -p $port get $_script .$_script
 	done
 }
-#if [[ $# -gt 0 ]]; then
-#	echo "Se sacaran $# programas"
-#	for j in $*; do
-#		echo $j
-#		if [[ ! $j =~ .+\..+ && ! -d .$j ]]; then	
-#			echo "Es un directorio y no existe."
-#			mkdir .$j
-#		fi
-#		ampy -p /dev/ttyUSB0 get $j $j
-#	done
-#else
-#  get_scripts  
-#	rm ./boot.py
-#fi
 
 function usage {
 	echo "USAGE: get2esp [OPTION] [ARGUMENTS]: "
@@ -91,38 +77,41 @@ function exit_abnormal {
 	exit 1
 }
 
+function get {
 
-while getopts ":s:d:ah" opt;
-do
-	case ${opt} in
-		s)
-			echo "This option get a script or scripts of device."
-			shift $(( OPTIND - 2 ))
-			args=$*
-			get_scripts $args
-			;;
-		d)
-			echo "This option get a directory of device."
-			shift $(( OPTIND - 2 ))
-			args=$*
-			get_directory $args
-			;;
-		a)
-			echo "Option to get all content of device."
-			read -p "Proporciona por favor el puerto para hacer la conexion: " port
-			get_all $port
-			;;
-		h)
-			usage
-			;;
-		:)
-			echo "Error: -${OPTARG} requiere argumentos."
-			exit_abnormal
-			;;
-		*)
-			echo "Option not valid"
-			exit_abnormal
-			;;
-		esac
-done
+	while getopts ":s:d:ah" opt;
+	do
+		case ${opt} in
+			s)
+				echo "This option get a script or scripts of device."
+				shift $(( OPTIND - 2 ))
+				args=$*
+				get_scripts $args
+				;;
+			d)
+				echo "This option get a directory of device."
+				shift $(( OPTIND - 2 ))
+				args=$*
+				get_directory $args
+				;;
+			a)
+				echo "Option to get all content of device."
+				read -p "Proporciona por favor el puerto para hacer la conexion: " port
+				get_all $port
+				;;
+			h)
+				usage
+				;;
+			:)
+				echo "Error: -${OPTARG} requiere argumentos."
+				exit_abnormal
+				;;
+			*)
+				echo "Option not valid"
+				exit_abnormal
+				;;
+			esac
+	done
+
+}
 
