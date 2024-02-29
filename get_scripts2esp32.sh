@@ -6,7 +6,7 @@ function get_all {
 	lectura=$(ampy -p /dev/ttyUSB0 ls $dir)
 	#echo "$lectura"
 	for i in $lectura; do
-		if [[ $i =~ .+\.(py|json|mpy|log|md|txt)$ ]]; then #Para extraer los ficheros 
+		if [[ $i =~ .+\.(py|json|mpy|log|md|txt|dat)$ ]]; then #Para extraer los ficheros 
 			name=${i:${#dir}}
 			ampy -p /dev/ttyUSB0 get ${i:1} ${i:1}
 			echo ${i:1} ${i:1}
@@ -75,7 +75,7 @@ function get_dir_ampy {
 function usage {
 	echo "USAGE: get2esp [OPTION] [ARGUMENTS]: "
 	echo "Get a script, directory or all content of device."
-	echo "	-f		Get script or scripts. The argmunets have to be names of scripts."
+	echo "	-s		Get script or scripts. The argmunets have to be names of scripts."
 	echo "	-d		Get directory. The arguments have to be a directory."
 	echo "	-a		Get all content of device. Not pass any argument."
 }
@@ -87,10 +87,10 @@ function exit_abnormal {
 }
 
 
-while getopts ":f:d:ah" opt;
+while getopts ":s:d:ah" opt;
 do
 	case ${opt} in
-		f)
+		s)
 			echo "This option get a script or scripts of device."
 			shift $(( OPTIND - 2 ))
 			args=$*
