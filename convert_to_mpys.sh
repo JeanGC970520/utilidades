@@ -12,7 +12,11 @@ function convertTompy {
     lectura=$(find $(pwd) -name "*.py")
     for obj in $lectura; do
         name=${obj##*/}
-        if [[ $obj =~ (.+\.py)$ && $name != main.py ]]; then
+        if [[ $obj =~ .*/test/.* ]]; then
+            #echo "Scripts del paquete test"
+            continue
+        fi
+        if [[ $name =~ ^([^__].+\.py)$ && $name != main.py ]]; then
             echo "$name would be convert to .mpy"
             mpy-cross $obj   # Generacion de archivo .mpy
             mpy=${name/\.py/\.mpy}
