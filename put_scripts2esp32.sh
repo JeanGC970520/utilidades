@@ -37,7 +37,7 @@ function send_all_directory {
     inicio=$(($total_objs-($total_objs-1)))
     echo $total_objs $inicio
     for i in $cont; do
-        if [[ $i != main.py && $i != "." && $i != ".." ]]; then 
+        if [[ $i != main.py && $i != "." && $i != ".."  && $i != ".git" ]]; then 
             #echo "Escribiendo $i al esp32"
             ProgressBar $inicio $total_objs
             inicio=$(( $inicio+1 ))
