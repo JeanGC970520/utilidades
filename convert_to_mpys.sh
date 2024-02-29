@@ -16,16 +16,24 @@ function convertTompy {
             #echo "Scripts del paquete test"
             continue
         fi
-        if [[ $name =~ ^([^__].+\.py)$ && $name != main.py ]]; then
-            echo "$name would be convert to .mpy"
-            mpy-cross $obj   # Generacion de archivo .mpy
-            mpy=${name/\.py/\.mpy}
+        if [[ $name != main.py ]]; then
+            
             path=${obj#*$DIR_ACTUAL*}
             dir=mpys${path/$name/} 
             if [ ! -e $dir ]; then  # Aqui si ponia [[ condicion ]] no funcionaba, por ello la importancia de los parentesis.
                 echo "Making directory $dir"
                 mkdir -p $dir
             fi
+
+            if [[ $name =~ ^([__].+\.py)$ ]]; then
+                #echo "__init__.py founded"
+                cp ${dir:5}$name $dir
+                continue
+            fi
+            
+            echo "$name would be convert to .mpy"
+            mpy-cross $obj   # Generacion de archivo .mpy
+            mpy=${name/\.py/\.mpy}
             #echo "Mover: ${dir:4}$mpy a $dir" # ${path%/$name}
             mv ${dir:5}$mpy $dir
         fi
