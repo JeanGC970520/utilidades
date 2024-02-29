@@ -69,8 +69,8 @@ do
     case ${opt} in 
         f)
             echo "Convert to mpy one script."
-			      shift $(( OPTIND - 2 ))
-			      args=$*
+            shift $(( OPTIND - 2 ))
+            args=$*
             convertTompy_script $args
             ;;
         d)
