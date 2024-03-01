@@ -2,7 +2,10 @@
 # Script para cargarle todos los programas de un directorio
 #set -e
 
-source ./esp/progress_bar.bash
+SCRIPT=$(readlink -f $0);
+dir_base=`dirname $SCRIPT`;
+
+source ${dir_base}/esp/progress_bar.bash
 
 function put_usage {
     echo "Writes N scripts using ampy command to sends its to esp32, options:"

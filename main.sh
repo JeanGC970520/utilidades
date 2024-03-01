@@ -1,9 +1,12 @@
 #!/bin/bash
 
-source ./esp/convert_to_mpys.bash
-source ./esp/put_scripts2esp.bash
-source ./esp/get_scripts2esp.bash
-source ./esp/install_firmware.bash
+SCRIPT=$(readlink -f $0);
+dir_base=`dirname $SCRIPT`;
+ 
+source ${dir_base}/esp/convert_to_mpys.bash
+source ${dir_base}/esp/put_scripts2esp.bash
+source ${dir_base}/esp/get_scripts2esp.bash
+source ${dir_base}/esp/install_firmware.bash
 
 
 function main_usage {
@@ -70,6 +73,12 @@ do
             ;;
 
         -h|--help)
+            main_usage
+            shift $#
+            ;;
+
+        *)
+            echo -e "Option '$1' not valid.\n"
             main_usage
             shift $#
             ;;
