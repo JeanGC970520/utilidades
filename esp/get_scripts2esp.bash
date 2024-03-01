@@ -26,89 +26,132 @@ function get_all {
 }
 
 function get_scripts {
-	read -p "Proporciona por favor el puerto para hacer la conexion: " port
+	port=$1
+	shift 1
+	inicio=0
+	num_scripts=$#
 	for _script in $*; do
 		if [[ $_script =~ .+\..+ ]]; then
-			echo "Get $_script"
+			# echo "Get $_script"
+			ProgressBar $inicio $num_scripts
+			inicio=$(( $inicio+1 ))
 			ampy -p $port get $_script $_script
 		else
 			echo "The argument $_script isn't a script."
 			exit_abnormal
 		fi
 	done
+	ProgressBar $inicio $num_scripts
+	echo ""
 }
 
 function get_directory {
-	#echo $1
-	if [[ ! $1 =~ .+\..+ && ! -d ./$1 ]]; then
-		echo "$1 is a directory and doesn't exist."
-		mkdir $1
-		get_dir_ampy $1
-	elif [[ ! $1 =~ .+\..+ ]]; then
-		echo "$1 is a directory and exist."
-		get_dir_ampy $1
+	if [[ ! $2 =~ .+\..+ && ! -d ./$2 ]]; then
+		echo "$2 is a directory and doesn't exist."
+		mkdir $2
+		get_dir_ampy $*
+	elif [[ ! $2 =~ .+\..+ ]]; then
+		echo "$2 is a directory and exist."
+		get_dir_ampy $*
 	else
-		echo "The argument $1 isn't a directory."
-		exit_abnormal
+		echo "The argument $2 isn't a directory."
+		get_exit_abnormal
 	fi
 }
 
 function get_dir_ampy {
-	read -p "Proporciona por favor el puerto para hacer la conexion: " port
-	content=$(ampy -p $port ls $1)
-	#echo $content
+	port=$1
+	shift 1
+	content=$(ampy -p $port ls ${1%/}) # Con % elimino la parte mas corta de donde encuentre ese patron (/)
+	# echo $content
+	inicio=0
+	num_scripts=$( ampy -p $port ls ${1%/} | wc -l )
+	# echo $content
+	echo "Numero de archivos a extraer: $num_scripts"
 	for _script in $content; do
-		#echo "$_script .$_script"
+		# echo "$_script .$_script"
+		ProgressBar $inicio $num_scripts
+		inicio=$(( $inicio+1 ))
 		ampy -p $port get $_script .$_script
+	done
+	ProgressBar $inicio $num_scripts
+	echo ""
+}
+
+function ls {
+	args=$1
+	if [ $# -gt 1 ]; then
+		args=$2
+	fi
+	port=${args#--port[=?]}
+	for data in $(ampy -p $port ls); do
+		echo -e "$data"
 	done
 }
 
-function usage {
-	echo "USAGE: get2esp [OPTION] [ARGUMENTS]: "
+function get_usage {
 	echo "Get a script, directory or all content of device."
+	echo "USAGE: get --port [PORT] | --port=[PORT] [OPTION] [ARGUMENTS]: "
+    echo "	--port  Port to make the connection and send the content."
 	echo "	-s		Get script or scripts. The argmunets have to be names of scripts."
 	echo "	-d		Get directory. The arguments have to be a directory."
 	echo "	-a		Get all content of device. Not pass any argument."
 }
 
 
-function exit_abnormal {
-	usage
+function get_exit_abnormal {
+	get_usage
 	exit 1
 }
 
 function get {
 
-	while getopts ":s:d:ah" opt;
+	while getopts ":-:s:d:ah" opt;
 	do
 		case ${opt} in
+			-)
+                case "${OPTARG}" in
+                    port)
+                        port="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                        echo "Puerto seleccionado con '--${OPTARG}': ${port}" >&2
+                        ;;
+                    port=*)
+                        port=${OPTARG#*=}
+                        echo "Puerto seleccionado con '--port=${port}'" >&2
+                        ;;
+                    *) 
+                        if [ "$OPTERR" = 1 ] && [ "${optspec:0:1}" != ":" ]; then
+                            echo "Unknown option --${OPTARG}" >&2
+                        fi
+                        get_exit_abnormal
+                        ;;
+                esac;;
 			s)
-				echo "This option get a script or scripts of device."
+				echo "This option get a script or scripts of the device."
 				shift $(( OPTIND - 2 ))
 				args=$*
-				get_scripts $args
+				get_scripts $port $args
 				;;
 			d)
-				echo "This option get a directory of device."
+				echo "This option get a directory of the device."
 				shift $(( OPTIND - 2 ))
 				args=$*
-				get_directory $args
+				get_directory $port $args
 				;;
 			a)
-				echo "Option to get all content of device."
-				read -p "Proporciona por favor el puerto para hacer la conexion: " port
+				echo "This option get all content of the device."
 				get_all $port
 				;;
 			h)
-				usage
+				get_usage
 				;;
 			:)
 				echo "Error: -${OPTARG} requiere argumentos."
-				exit_abnormal
+				get_exit_abnormal
 				;;
 			*)
-				echo "Option not valid"
-				exit_abnormal
+				echo -e "Option '-$OPTARG' not valid.\n"
+				get_exit_abnormal
 				;;
 			esac
 	done

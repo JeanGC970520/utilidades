@@ -51,7 +51,7 @@ function convertTompy_script {
 }
 
 function usage {
-    echo "mpy command convert a script py or a complete directory with py's scripts to .mpy"
+    echo "Convert a script py or a complete directory with py's scripts to .mpy"
     echo "USAGE: mpy [OPTION] [ARGMUNENTS]"
     echo "  -f  Convert the script that passed like argument."
     echo "  -d  Convert the complete directory where the command has been called."
@@ -85,7 +85,7 @@ function encrypt {
                 exit_abnormal
                 ;;
             *)
-                echo "Option nor valid."
+                echo -e "Option '-$OPTARG' not valid.\n"
                 exit_abnormal
                 ;;
         esac

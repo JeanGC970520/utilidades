@@ -4,23 +4,25 @@
 
 source ./esp/progress_bar.bash
 
-function usage {
-    echo "Usage: put2esp [OPTION] [SCRIPTS or DIRECTORY]"
+function put_usage {
     echo "Writes N scripts using ampy command to sends its to esp32, options:"
+    echo "Usage: put --port [PORT] | --port=[PORT] [OPTION] [SCRIPTS or DIRECTORY]"
+    echo "      --port  Port to make the connection and send the content."
     echo "      -s      Send only the SCRIPTS that are passed as parameters."
     echo "      -d      Send all DIRECTORY that are passed as parameter."
     echo "      -a      Send all current DIRECTORY."
 }
 
-function exit_abnormal {
-    usage
+function put_exit_abnormal {
+    put_usage
     exit 1
 }
 
 function send_scripts {
     inicio=0
+    port=$1
+    shift 1
     num_scripts=$#
-    read -p "Proporciona por favor el puerto para hacer la conexion: " port
     echo "Se pasaran $num_scripts programas"
     for j in $*; do
         ProgressBar $inicio $num_scripts
@@ -34,7 +36,8 @@ function send_scripts {
 }
 
 function send_all_directory {
-    read -p "Proporciona por favor el puerto para hacer la conexion: " port
+    port=$1
+    shift 1
     echo "Se leera todo el contenido del directorio $pwd y se le pasara al esp32"
     cont=$(ls -a $pwd)
     rest=2          #Le resto dos por . y ..
@@ -56,35 +59,56 @@ function send_all_directory {
 
 function put {
 
-    while getopts ":s:d:ah" opt;
+    while getopts ":-:s:d:ah" opt;
     do
-        case ${opt} in
+        case "${opt}" in 
+            -)
+                case "${OPTARG}" in
+                    port)
+                        port="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                        echo "Puerto seleccionado con '--${OPTARG}': ${port}" >&2
+                        ;;
+                    port=*)
+                        port=${OPTARG#*=}
+                        echo "Puerto seleccionado con '--port=${port}'" >&2
+                        ;;
+                    *) 
+                        if [ "$OPTERR" = 1 ] && [ "${optspec:0:1}" != ":" ]; then
+                            echo "Unknown option --${OPTARG}" >&2
+                        fi
+                        put_exit_abnormal
+                        ;;
+                esac;;
             s)
                 echo "Option to send some files"
                 shift $(( OPTIND - 2 ))
                 args=$*
-                send_scripts $args 
+                if [ -z $port ]; then   # Se comprueba si el puerto fue pasado o no
+                    echo "Especifica un puerto de conexion" >&2
+                    put_exit_abnormal
+                fi
+                send_scripts $port $args 
                 ;;
             d)
                 echo "Option to send a directory"
                 shift $(( OPTIND - 2 ))
                 args=$*
-                send_scripts $args 
+                send_scripts $port $args 
                 ;;
             a)
                 echo "Option to send all current directory"
-                send_all_directory
+                send_all_directory $port 
                 ;;
             h)
                 usage
                 ;;
             :)
                 echo "Error: -$OPTARG requiere argumentos."
-                exit_abnormal
+                put_exit_abnormal
                 ;;
             *)
-                echo "Invalid option: $OPTARG"
-                exit_abnormal
+                echo -e "Option '-$OPTARG' not valid.\n"
+                put_exit_abnormal
                 ;;
         esac
     done
