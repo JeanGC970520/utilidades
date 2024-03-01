@@ -19,6 +19,14 @@ function main_usage {
     echo "  firmware - Install on the device selected the firmware choice it"
 }
 
+function verify_args {
+    if [ $# -eq 0 ]; then
+        echo -e "Arguments are NECESSARY.\n"
+        main_usage
+        exit 1
+    fi
+}
+
 while [ "$#" -gt 0 ]; 
 do
     case "$1" in
@@ -26,6 +34,7 @@ do
         encrypt)
             #echo "Opcion para encriptar .py"
             shift 1
+            verify_args $*
             encrypt $*
             shift $#
             ;;
@@ -33,6 +42,7 @@ do
         put)
             #echo "Opcion para enviar datos al esp"
             shift 1
+            verify_args $*
             put $*
             shift $#
             ;;
@@ -40,18 +50,21 @@ do
         get)
             #echo "Opcion para extraer datos del esp"
             shift 1
+            verify_args $*
             get $*
             shift $#
             ;;
         
         firmware)
             shift 1
+            verify_args $*
             install $*
             shift $#
             ;;
         
         ls)
             shift 1
+            verify_args $*
             ls $*
             shift $#
             ;;
