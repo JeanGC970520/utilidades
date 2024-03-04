@@ -62,13 +62,23 @@ function get_directory {
 function get_dir_ampy {
 	port=$1
 	shift 1
-	content=$(ampy -p $port ls ${1%/}) # Con % elimino la parte mas corta de donde encuentre ese patron (/)
-	# echo $content
+	local content
+	local subdirs
+	ampy_tree $port $1 content subdirs
+	# declare -p content
+	# declare -p subdirs
+	unset content[0]
+	# for data in ${content[@]}; do 
+	# 	echo $data 
+	# done
 	inicio=0
-	num_scripts=$( ampy -p $port ls ${1%/} | wc -l )
-	# echo $content
+	num_scripts=${#content[@]}
+	for dir in ${subdirs[@]}; do
+		# echo .$dir
+		mkdir .$dir
+	done
 	echo "Numero de archivos a extraer: $num_scripts"
-	for _script in $content; do
+	for _script in ${content[@]}; do
 		# echo "$_script .$_script"
 		ProgressBar $inicio $num_scripts
 		inicio=$(( $inicio+1 ))
@@ -78,19 +88,60 @@ function get_dir_ampy {
 	echo ""
 }
 
-function ls {
-	args=$1
-	if [ $# -gt 1 ]; then
-		args=$2
+function ampy_tree {
+	port=$1
+	shift 1
+	root=${1%/} # Con % elimino la parte mas corta de donde encuentre ese patron (/)
+	if [[ $1 =~ ^/$ ]]; then
+		root=$1
 	fi
-	port=${args#--port[=?]}
-	for data in $(ampy -p $port ls); do
-		echo -e "$data"
+	local -n array=$2
+	local -n allDirs=$3
+	# echo "root: $root"
+	dirs=($root)
+	count=0
+	while [[ ${#dirs[@]} -gt 0 ]];
+	do
+		# echo "Directorio a escanear ${dirs[$count]}"
+		content=$(ampy -p $port ls ${dirs[$count]})
+		for data in $content; do 
+			# echo $data
+			if [[ ! $data =~ .+\..+ ]]; then
+				# echo "$data is a directory"
+				dirs+=($data)
+				allDirs+=($data)
+				continue
+			fi
+			array+=($data)
+		done
+		unset dirs[$count]
+		count=$(( $count + 1 ))
+		# declare -p dirs
+		# echo "Dirs: ${dirs[$count]} count: $count"
 	done
 }
 
+function ls {
+	portArg=$1
+	if [ $# -gt 1 ]; then
+		portArg=$2
+		shift 1
+	fi
+	dir=$2
+	if [[ $# -lt 2 ]]; then	
+		dir=/
+	fi
+	echo -e "Directorio a listar: $dir"
+	port=${portArg#--port[=?]}
+	local data
+	local directories
+	ampy_tree $port $dir data directories
+	readarray -td '' data_sorted < <(printf '%s\0' "${data[@]}" | sort -z -n)
+	cat -n <(printf '%s\n' "${data_sorted[@]}")
+}
+
 function get_usage {
-	echo "Get a script, directory or all content of device."
+	echo "Get a script, directry or all content of device."
 	echo "USAGE: get --port [PORT] | --port=[PORT] [OPTION] [ARGUMENTS]: "
     echo "	--port  Port to make the connection and send the content."
 	echo "	-s		Get script or scripts. The argmunets have to be names of scripts."
