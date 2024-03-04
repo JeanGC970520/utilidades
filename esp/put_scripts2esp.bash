@@ -103,7 +103,7 @@ function put {
                 send_all_directory $port 
                 ;;
             h)
-                usage
+                put_usage
                 ;;
             :)
                 echo "Error: -$OPTARG requiere argumentos."
