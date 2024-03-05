@@ -68,7 +68,7 @@ do
         ls)
             shift 1
             verify_args $*
-            ls $*
+            ls_esp $*
             shift $#
             ;;
 

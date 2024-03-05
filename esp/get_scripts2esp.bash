@@ -121,7 +121,7 @@ function ampy_tree {
 	done
 }
 
-function ls {
+function ls_esp {
 	portArg=$1
 	if [ $# -gt 1 ]; then
 		portArg=$2

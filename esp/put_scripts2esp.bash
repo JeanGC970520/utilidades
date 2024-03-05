@@ -41,8 +41,9 @@ function send_scripts {
 function send_all_directory {
     port=$1
     shift 1
-    echo "Se leera todo el contenido del directorio $pwd y se le pasara al esp32"
-    cont=$(ls -a $pwd)
+    echo "Se leera todo el contenido del directorio $(pwd) y se le pasara al esp32"
+    currentDir=$(pwd)
+    cont=$(ls -a $currentDir)
     rest=2          #Le resto dos por . y ..
     if [[ $cont =~ ".git" ]]; then rest=3; fi
     total_objs=$(($(ls -a $pwd | wc -l)-$rest))  #$(ls -a | wc -l) 
