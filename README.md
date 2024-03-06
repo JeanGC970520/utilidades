@@ -51,7 +51,7 @@ alias l='ls -CF'
 Ahora procederemos a agregar un alias debajo del ultimo que se tenga. La ruta debe ser en donde se hizo el clone del repositorio:
 
 ```console
-allias esp='~/Documents/esp32/utilidades/main.sh'
+alias esp='~/Documents/esp32/utilidades/main.sh'
 ```
 
 ### Usar comando
